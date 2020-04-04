@@ -119,7 +119,7 @@
 				var loginTab = TabUI.add( "Login", "login-tab" );
 				var debugTab = TabUI.add( "Debug", "debug-tab" );
 				var levelTab = TabUI.add( "Levels", "level-tab" );
-				var weponTab = TabUI.add( "Wepon", "wepon-tab" );
+				var outfitTab = TabUI.add( "Outfit", "outfit-tab" );
 				var cameraTab = TabUI.add( "Camera", "camera-tab" );
 				var controlTab = TabUI.add( "Controls", "control-tab" );
 				var materialTab = TabUI.add( "Material", "material-tab" );
@@ -127,9 +127,9 @@
 				var pathfinderTab = TabUI.add( "Pathfinder", "pathfinder-tab" );
 
 				document.body.appendChild( sidePanel );
-				TabUI.append("Controls", "Camera", "Material", "Animations", "Wepon", "Levels", "Pathfinder", "Login", "Debug" );
-				TabUI.Wepon.role.classList.add("active");
-				TabUI.Wepon.tab.classList.add("in","active");
+				TabUI.append("Controls", "Camera", "Material", "Animations", "Outfit", "Levels", "Pathfinder", "Login", "Debug" );
+				TabUI.Outfit.role.classList.add("active");
+				TabUI.Outfit.tab.classList.add("in","active");
 
 			})();
 
@@ -137,79 +137,43 @@
 
 		<script>
 
-		//	Wepon tab.
+		//	Outfit tab.
 
 			(function(){
 
-				wepons = {}; // TODO: local.
-				var Signal = signals.Signal;
+			//	var Signal = signals.Signal;
 
-				var tab = TabUI.Wepon.tab;
+				var tab = TabUI.Outfit.tab;
 
-				function onChangeWeponHand(){
-					var selectHand = document.getElementById("hand-droplist");
-					var selectWepon = document.getElementById("wepon-droplist");
-					if ( !( selectHand.value && selectWepon.value ) ) return;
-
-					var hand = animationController.object.getObjectByName( selectHand.value );
-
-					if ( selectHand.value.includes("Right") ) { 
-						wepons[ selectWepon.value ].rotation.z = Math.PI/2;
-					} else if ( selectHand.value.includes("Left") ) {
-						wepons[ selectWepon.value ].rotation.z = -Math.PI/2;
-					}
-
-					hand.add( wepons[ selectWepon.value ] );
-				}
+			//	Upperbody.
 
 				(function(){
 
 					var row = document.createElement("h3");
-					row.textContent = "Hand";
-
-					var Signal = signals.Signal;
-					handChanged = new Signal();
+					row.textContent = "Upperbody";
 
 					var select = document.createElement("select");
-					select.id = "hand-droplist";
-					select.style.cssText = "width:220px;color:#000;float:right;"
+					select.id = "upperbody-droplist";
+					select.style.cssText = "width:180px;color:#000;float:right;"
 						+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 						+ "font-size:20px;margin-left:10px;";
 
-					select.appendChild(createOption("RightHand"));
-					select.appendChild(createOption("RightHandThumb1"));
-					select.appendChild(createOption("RightHandThumb2")); // default.
-					select.appendChild(createOption("RightHandThumb3"));
-					select.appendChild(createOption("RightHandIndex1"));
-					select.appendChild(createOption("RightHandIndex2"));
-					select.appendChild(createOption("RightHandIndex3"));
-					select.appendChild(createOption("RightHandRing1"));
-					select.appendChild(createOption("RightHandRing2"));
-					select.appendChild(createOption("RightHandRing3"));
-					select.appendChild(createOption("RightHandThumb3_end"));
-					select.appendChild(createOption("RightHandIndex3_end"));
-					select.appendChild(createOption("RightHandRing3_end"));
+					select.appendChild(createOption("Blazer"));
+					select.appendChild(createOption("Corset"));
+					select.appendChild(createOption("Cowltop")); // default.
+					select.appendChild(createOption("Dress"));
+					select.appendChild(createOption("ElvisShirt"));
+					select.appendChild(createOption("Hoodie"));
+					select.appendChild(createOption("LongCoat"));
+					select.appendChild(createOption("TankTop"));
+					select.appendChild(createOption("Tshirt"));
 
-					select.appendChild(createOption("LeftHand"));
-					select.appendChild(createOption("LeftHandThumb1"));
-					select.appendChild(createOption("LeftHandThumb2")); // default.
-					select.appendChild(createOption("LeftHandThumb3"));
-					select.appendChild(createOption("LeftHandIndex1"));
-					select.appendChild(createOption("LeftHandIndex2"));
-					select.appendChild(createOption("LeftHandIndex3"));
-					select.appendChild(createOption("LeftHandRing1"));
-					select.appendChild(createOption("LeftHandRing2"));
-					select.appendChild(createOption("LeftHandRing3"));
-					select.appendChild(createOption("LeftHandThumb3_end"));
-					select.appendChild(createOption("LeftHandIndex3_end"));
-					select.appendChild(createOption("LeftHandRing3_end"));
-
-					select.addEventListener( "change", onChangeWeponHand );
+					select.addEventListener( "change", function(){});
 
 					row.appendChild( select );
 					tab.appendChild( row );
 
-					function createOption(name){
+					function createOption(name, value){
 						var option = document.createElement("option");
 						option.text = option.value = name;
 						return option;
@@ -217,50 +181,44 @@
 
 				})();
 
+
+			//	Lowerbody.
+
 				(function(){
 
 					var row = document.createElement("h3");
-					row.textContent = "Wepon";
-
-					weponChanged = new Signal();
+					row.textContent = "Lowerbody";
 
 					var select = document.createElement("select");
-					select.id = "wepon-droplist";
-					select.style.cssText = "width:220px;color:#000; float:right;"
+					select.id = "lowerbody-droplist";
+					select.style.cssText = "width:180px;color:#000;float:right;"
 						+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 						+ "font-size:20px;margin-left:10px;";
 
-					select.addEventListener("change", onChangeWeponHand );
+					select.appendChild(createOption("BaggyJeans"));
+					select.appendChild(createOption("Bootcut"));
+					select.appendChild(createOption("FlareBottoms"));
+					select.appendChild(createOption("FlareLegs"));
+					select.appendChild(createOption("FrillySkirt"));
+					select.appendChild(createOption("Gown"));
+					select.appendChild(createOption("LongSkirt"));
+					select.appendChild(createOption("MiniSkirt"));
+					select.appendChild(createOption("ShortSkirt"));
+					select.appendChild(createOption("StraightLegs"));
+					select.appendChild(createOption("MermaidTail"));
+
+					select.addEventListener( "change", function(){});
 
 					row.appendChild( select );
 					tab.appendChild( row );
 
+					function createOption(name, value){
+						var option = document.createElement("option");
+						option.text = option.value = name;
+						return option;
+					}
+
 				})();
-
-
-			//	Load wepons.
-
-				(function(){
-				//	Great Sword (RightHandThumb2).
-					var url = "/manny/wepons/greatsword_thumb2.fbx";
-					var loader = new THREE.FBXLoader();
-					loader.load( url, function( group ){
-						debugMode && console.log( "sword2.fbx:", group );
-						var mesh = group.children[0];
-						mesh.name = "greatsword"; 
-						var s = 1; mesh.scale.set(s,s,s); // important!
-						wepons[ mesh.uuid ] = mesh;
-						var select = document.getElementById("wepon-droplist");
-						select && select.appendChild( createOption( mesh.name, mesh.uuid ) );
-					});
-				})();
-
-				function createOption(name, value){
-					var option = document.createElement("option");
-					option.text = name;
-					option.value = value;
-					return option;
-				}
 
 			})();
 
@@ -360,14 +318,16 @@
 							var select = document.getElementById("material-droplist");
 							var selected = scene.getObjectByProperty("uuid", select.value);
 							if ( !selected ) return;
-							var material = selected.material;
-							if ( !material ) return;
-							var uuid = button.getAttribute("uuid");
-							material.roughness = 0;
-							material.metalness = 1;
-							material.envMap = textures[ uuid ];
-							material.envMap.needsUpdate = true;
-							material.needsUpdate = true;
+							for ( var i = 0; i < selected.material.length; i++ ){
+								var material = selected.material[i];
+							//	if ( !material ) return;
+								var uuid = button.getAttribute("uuid");
+								material.roughness = 0;
+								material.metalness = 1;
+								material.envMap = textures[ uuid ];
+								material.envMap.needsUpdate = true;
+								material.needsUpdate = true;
+							}
 							textures.dispose();
 						//	textureClicked.dispatch( uuid );
 						});
@@ -1765,7 +1725,7 @@
 				fbx = group; // debug!
 
 			//	object is THREE.Group.
-				group.name = "MannyTheSkeleton5.1";
+				group.name = "RLC_Female_Body";
 				var s = 0.00033; group.scale.set(s,s,s); // important!
 			//	group.position.y = -localPlayerController.radius;
 				debugMode && console.log( group ); 
@@ -1779,7 +1739,7 @@
                         child.receiveShadow = true;	
                     }
 
-					if (child.name == "MannyTheSkeleton_v51") {
+					if (child.name == "HF_Fullbody_Nude") {
 						if ( Array.isArray(child.material) ) {
 							child.material = child.material.map( function( item ){
 								var name = item.name;
@@ -1826,9 +1786,11 @@
 					loader.load( url, function( image ){
 						var mapping = THREE.SphericalReflectionMapping;		// important!
 						var texture = new THREE.Texture( image, mapping );	// important!
-						var material = group.getObjectByName("MannyTheSkeleton_v51").material;
-						material.roughness = 0; material.metalness = 1; material.envMap = texture;
-						material.envMap.needsUpdate = true; material.needsUpdate = true;
+						for ( var i = 0; i < group.getObjectByName("HF_Fullbody_Nude").material.length; i++ ){
+							var material = group.getObjectByName("HF_Fullbody_Nude").material[i];
+							material.roughness = 0; material.metalness = 1; material.envMap = texture;
+							material.envMap.needsUpdate = true; material.needsUpdate = true;
+						}
 					});
 				})();
 
