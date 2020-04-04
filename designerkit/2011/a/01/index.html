@@ -1917,7 +1917,103 @@
 					debugMode && console.log( animationController ); 
 					localPlayerController.dispatchEvent( {type:"startIdling"} );
 
+				})();
 
+				scene.add( group );
+
+			//	Skeleton helper.
+
+				(function(){
+					var armature = group.getObjectByName("Armature");
+					skeletonHelper = new THREE.SkeletonHelper(armature);
+					skeletonHelper.visible = false;
+					scene.add( skeletonHelper );
+				})();
+
+			}, 
+
+			function onProgress( e ){
+				var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+				var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+				console.log( "Loaded", progress, "of", size,  );
+			},
+
+			function onError( err ){
+				console.error(err);
+			});
+
+		</script>
+
+		<script>
+
+		//	Debug tab.
+
+			(function(){
+
+				var mesh;
+				var height = 12;
+				var radius = 20;
+				var segments = 8;
+
+				var url = "https://i.imgur.com/rxUXS8C.png";
+				var loader = new THREE.ImageLoader();
+				loader.setCrossOrigin("anonymous"); // important!
+				loader.load( url, function( image ){
+
+					var mapping = THREE.SphericalReflectionMapping; // important!
+					var texture = new THREE.Texture( image, mapping );	// important!
+
+					var geometry = new THREE.CylinderGeometry(radius/3, radius, height, segments, 1);
+					geometry.computeFaceNormals(); // geometry.computeVertexNormals();
+				//	geometry.computeBoundingSphere(); geometry.computeBoundingBox();
+					var material = new THREE.MeshStandardMaterial({
+						roughness:0, metalness:1, envMap:texture,
+					});
+
+					mesh = new THREE.Mesh( geometry, material );
+					mesh.position.y = ( height * 0.5 ) - 1;
+					mesh.material.envMap.needsUpdate = true; // important!
+
+				});
+
+			//	Create Blocks Button.
+
+				var interval;
+				var tab = TabUI.Debug.tab;
+				var row = document.createElement("div");
+				row.style.cssText = "margin:10px 15px;height:35px;text-align:center;";
+
+				var button = document.createElement("div");
+				button.id = "create-blocks";
+				button.textContent = "Create bases";
+				button.style.cssText = "min-width:60%;width:fit-content;height:40px;font-size:large;text-overflow:ellipsis;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.addEventListener( "click", function(){
+					clearTimeout( interval );
+					interval = setTimeout( function(){
+						for ( var i = 100; i > 0; i-- ){
+							var base = mesh.clone();
+							base.position.set(
+								Math.floor( Math.cos( Math.random() * 2*Math.PI ) * 1000 ),
+								mesh.position.y,
+								Math.floor( Math.cos( Math.random() * 2*Math.PI ) * 1000 ),
+							);
+							scene.add( base );
+							octree.importThreeMesh( base );
+							base.material.envMap.needsUpdate = true; // important!
+						}
+					}, 250);
+				});
+
+				row.appendChild( button );
+				tab.appendChild( row );
+
+			})();
+
+		</script>
+
+		<script>
+/*
 				//	LOAD ANIMATIONS.
 
 
@@ -2053,104 +2149,6 @@
 							});
 						});
 					})();
-
-				})();
-
-				scene.add( group );
-
-			//	Skeleton helper.
-
-				(function(){
-					var armature = group.getObjectByName("Armature");
-					skeletonHelper = new THREE.SkeletonHelper(armature);
-					skeletonHelper.visible = false;
-					scene.add( skeletonHelper );
-				})();
-
-			}, 
-
-			function onProgress( e ){
-				var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
-				var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
-				console.log( "Loaded", progress, "of", size,  );
-			},
-
-			function onError( err ){
-				console.error(err);
-			});
-
-		</script>
-
-		<script>
-
-		//	Debug tab.
-
-			(function(){
-
-				var mesh;
-				var height = 12;
-				var radius = 20;
-				var segments = 8;
-
-				var url = "https://i.imgur.com/rxUXS8C.png";
-				var loader = new THREE.ImageLoader();
-				loader.setCrossOrigin("anonymous"); // important!
-				loader.load( url, function( image ){
-
-					var mapping = THREE.SphericalReflectionMapping; // important!
-					var texture = new THREE.Texture( image, mapping );	// important!
-
-					var geometry = new THREE.CylinderGeometry(radius/3, radius, height, segments, 1);
-					geometry.computeFaceNormals(); // geometry.computeVertexNormals();
-				//	geometry.computeBoundingSphere(); geometry.computeBoundingBox();
-					var material = new THREE.MeshStandardMaterial({
-						roughness:0, metalness:1, envMap:texture,
-					});
-
-					mesh = new THREE.Mesh( geometry, material );
-					mesh.position.y = ( height * 0.5 ) - 1;
-					mesh.material.envMap.needsUpdate = true; // important!
-
-				});
-
-			//	Create Blocks Button.
-
-				var interval;
-				var tab = TabUI.Debug.tab;
-				var row = document.createElement("div");
-				row.style.cssText = "margin:10px 15px;height:35px;text-align:center;";
-
-				var button = document.createElement("div");
-				button.id = "create-blocks";
-				button.textContent = "Create bases";
-				button.style.cssText = "min-width:60%;width:fit-content;height:40px;font-size:large;text-overflow:ellipsis;";
-				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-				button.addEventListener( "click", function(){
-					clearTimeout( interval );
-					interval = setTimeout( function(){
-						for ( var i = 100; i > 0; i-- ){
-							var base = mesh.clone();
-							base.position.set(
-								Math.floor( Math.cos( Math.random() * 2*Math.PI ) * 1000 ),
-								mesh.position.y,
-								Math.floor( Math.cos( Math.random() * 2*Math.PI ) * 1000 ),
-							);
-							scene.add( base );
-							octree.importThreeMesh( base );
-							base.material.envMap.needsUpdate = true; // important!
-						}
-					}, 250);
-				});
-
-				row.appendChild( button );
-				tab.appendChild( row );
-
-			})();
-
-		</script>
-
-		<script>
-/*
 */
 		</script>
 
