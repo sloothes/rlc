@@ -116,6 +116,8 @@
 			(function(){
 
 				var sidePanel = createSidePanel();
+				var skinTab = TabUI.add( "Skin", "skin-tab" );
+				var eyesTab = TabUI.add( "Eyes", "eyes-tab" );
 				var loginTab = TabUI.add( "Login", "login-tab" );
 				var debugTab = TabUI.add( "Debug", "debug-tab" );
 				var levelTab = TabUI.add( "Levels", "level-tab" );
@@ -124,10 +126,10 @@
 				var controlTab = TabUI.add( "Controls", "control-tab" );
 				var materialTab = TabUI.add( "Material", "material-tab" );
 				var animationTab = TabUI.add( "Animations", "animation-tab" );
-				var pathfinderTab = TabUI.add( "Pathfinder", "pathfinder-tab" );
+				var underwearsTab = TabUI.add( "Underwears", "underwears-tab" );
 
 				document.body.appendChild( sidePanel );
-				TabUI.append("Controls", "Camera", "Material", "Animations", "Outfit", "Levels", "Pathfinder", "Login", "Debug" );
+				TabUI.append("Controls", "Camera", "Material", "Animations", "Outfit", "Underwears", "Skin", "Eyes", "Levels", "Login", "Debug" );
 				TabUI.Outfit.role.classList.add("active");
 				TabUI.Outfit.tab.classList.add("in","active");
 
@@ -145,7 +147,128 @@
 
 				var tab = TabUI.Outfit.tab;
 
-			//	Upperbody.
+			//	Female Hat.
+
+				(function(){
+
+					var row = document.createElement("h3");
+					row.textContent = "Hat";
+
+					var select = document.createElement("select");
+					select.id = "hat-droplist";
+					select.style.cssText = "width:180px;color:#000;float:right;"
+						+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+						+ "font-size:20px;margin-left:10px;";
+
+					select.appendChild(createOption("Catwoman"));
+					select.appendChild(createOption("Indian"));
+					select.appendChild(createOption("Nurse"));
+					select.appendChild(createOption("Sailor"));
+					select.appendChild(createOption("Sanda"));
+					select.appendChild(createOption("Ski"));
+					select.appendChild(createOption("Witch"));
+
+					select.addEventListener( "change", function(){});
+
+					row.appendChild( select );
+					tab.appendChild( row );
+
+					function createOption(name, value){
+						var option = document.createElement("option");
+						option.text = option.value = name;
+						return option;
+					}
+
+				})();
+
+			//	Female Hair.
+
+				(function(){
+
+					var row = document.createElement("h3");
+					row.textContent = "Hair";
+
+					var select = document.createElement("select");
+					select.id = "hair-droplist";
+					select.style.cssText = "width:180px;color:#000;float:right;"
+						+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+						+ "font-size:20px;margin-left:10px;";
+
+					select.appendChild(createOption("BobPonyTail"));
+					select.appendChild(createOption("BobShort"));
+					select.appendChild(createOption("BobTied"));
+					select.appendChild(createOption("DreadShoulder"));
+					select.appendChild(createOption("FrenchBraid"));
+					select.appendChild(createOption("LongCurly"));
+					select.appendChild(createOption("LongCutBangs"));
+					select.appendChild(createOption("LongNoBangs"));
+					select.appendChild(createOption("LongSwoopBangs"));
+					select.appendChild(createOption("LongParted"));
+					select.appendChild(createOption("LongStraigth"));
+					select.appendChild(createOption("Medium"));
+					select.appendChild(createOption("MedBob"));
+					select.appendChild(createOption("MedBobBangs"));
+					select.appendChild(createOption("MedCurly"));
+					select.appendChild(createOption("MedPonytail"));
+					select.appendChild(createOption("MedShag"));
+					select.appendChild(createOption("OrientalTied"));
+					select.appendChild(createOption("Piggytail"));
+					select.appendChild(createOption("Pigtails"));
+					select.appendChild(createOption("PunkMohawk"));
+					select.appendChild(createOption("PunkMohawkSides"));
+					select.appendChild(createOption("PunkSpiky"));
+					select.appendChild(createOption("PunkSuperSpiky"));
+					select.appendChild(createOption("Short"));
+					select.appendChild(createOption("ShortStraight"));
+					select.appendChild(createOption("ShortVic"));
+					select.appendChild(createOption("Wavy"));
+
+					select.addEventListener( "change", function(){});
+
+					row.appendChild( select );
+					tab.appendChild( row );
+
+					function createOption(name, value){
+						var option = document.createElement("option");
+						option.text = option.value = name;
+						return option;
+					}
+
+				})();
+
+			//	Female Glasses.
+
+				(function(){
+
+					var row = document.createElement("h3");
+					row.textContent = "Glasses";
+
+					var select = document.createElement("select");
+					select.id = "glasses-droplist";
+					select.style.cssText = "width:180px;color:#000;float:right;"
+						+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+						+ "font-size:20px;margin-left:10px;";
+
+					select.appendChild(createOption("Mask"));
+					select.appendChild(createOption("Glasses1"));
+					select.appendChild(createOption("Glasses2"));
+					select.appendChild(createOption("Glasses3"));
+					select.appendChild(createOption("Glasses4"));
+
+					select.addEventListener( "change", function(){});
+
+					row.appendChild( select );
+					tab.appendChild( row );
+
+					function createOption(name, value){
+						var option = document.createElement("option");
+						option.text = option.value = name;
+						return option;
+					}
+
+				})();
+
+			//	Female Upperbody.
 
 				(function(){
 
@@ -181,8 +304,7 @@
 
 				})();
 
-
-			//	Lowerbody.
+			//	Female Lowerbody.
 
 				(function(){
 
@@ -206,6 +328,55 @@
 					select.appendChild(createOption("ShortSkirt"));
 					select.appendChild(createOption("StraightLegs"));
 					select.appendChild(createOption("MermaidTail"));
+
+					select.addEventListener( "change", function(){});
+
+					row.appendChild( select );
+					tab.appendChild( row );
+
+					function createOption(name, value){
+						var option = document.createElement("option");
+						option.text = option.value = name;
+						return option;
+					}
+
+				})();
+
+
+			//	Female Shoes.
+
+				(function(){
+
+					var row = document.createElement("h3");
+					row.textContent = "Shoes";
+
+					var select = document.createElement("select");
+					select.id = "shoes-droplist";
+					select.style.cssText = "width:180px;color:#000;float:right;"
+						+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+						+ "font-size:20px;margin-left:10px;";
+
+					select.appendChild(createOption("Shoes01"));
+					select.appendChild(createOption("Shoes02"));
+					select.appendChild(createOption("Shoes03"));
+					select.appendChild(createOption("Shoes04"));
+					select.appendChild(createOption("Shoes05"));
+					select.appendChild(createOption("Shoes06"));
+					select.appendChild(createOption("Shoes07"));
+					select.appendChild(createOption("Shoes08"));
+					select.appendChild(createOption("Shoes09"));
+					select.appendChild(createOption("Shoes10"));
+					select.appendChild(createOption("Shoes11"));
+					select.appendChild(createOption("Shoes12"));
+					select.appendChild(createOption("Shoes13"));
+					select.appendChild(createOption("Shoes14"));
+					select.appendChild(createOption("Shoes15"));
+					select.appendChild(createOption("Shoes16"));
+					select.appendChild(createOption("Shoes17"));
+					select.appendChild(createOption("Shoes18"));
+					select.appendChild(createOption("Shoes19"));
+					select.appendChild(createOption("Shoes20"));
+					select.appendChild(createOption("Shoes21"));
 
 					select.addEventListener( "change", function(){});
 
@@ -758,8 +929,24 @@
 					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 					+ "font-size:20px;margin-left:10px;";
 
+				select.appendChild(createOption("Idling"));
+				select.appendChild(createOption("Falling"));
+				select.appendChild(createOption("JumpingUp"));
+				select.appendChild(createOption("MediumRun"));
+				select.appendChild(createOption("RunningJump"));
+				select.appendChild(createOption("Wobbling"));
+
+				select.addEventListener( "change", function(){});
+
 				row.appendChild( select );
 				tab.appendChild( row );
+
+				function createOption(name, value){
+					var option = document.createElement("option");
+					option.text = option.value = name;
+					return option;
+				}
+
 
 			})();
 
@@ -787,7 +974,7 @@
 					button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 					button.addEventListener( "click", function(){
 						if ( animationController.currentMotionName == "idling" ) return;
-						animationController.play( "idling" ); 
+						animationController.play( "Idling" ); 
 					});
 
 					return button;
@@ -837,12 +1024,12 @@
 									console.log( group.animations );
 
 									if ( group.animations.length ) {
+										var name = filename;
 										var mixer = animationController.mixer;
 										var object = animationController.object;
 										var animations = group.animations;
 										var select = document.getElementById("animation-droplist");
 										animations.forEach( function( clip ){
-											++k; var name = k+"."+filename;
 											animationController.motion[ name ] = mixer.clipAction( clip, object );
 											select && select.appendChild( createOption( name ) );
 											function createOption(name){
@@ -1302,7 +1489,7 @@
 		//	Camera.
 			(function(){
 
-				var aspect = (window.innerWidth - w) / window.innerHeight;
+				var aspect = (window.innerWidth - 370) / window.innerHeight;
 				camera = new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
 				camera.position.set(0, 20, 50);
 
@@ -1366,11 +1553,11 @@
 				renderer.shadowMap.enabled = true;
 				renderer.setClearColor( 0x000000 );
 				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( (window.innerWidth - w), window.innerHeight );
+				renderer.setSize( (window.innerWidth - 370), window.innerHeight );
 				document.body.appendChild( renderer.domElement );
 
 				window.addEventListener("resize", function onWindowResize() {
-					renderer.setSize( (window.innerWidth - w), window.innerHeight );
+					renderer.setSize( (window.innerWidth - 370), window.innerHeight );
 				});
 
 				window.addEventListener("resize", function onWindowResize() {
@@ -1713,14 +1900,14 @@
 
 		//	Avatar loader.
 
-			var Signal = signals.Signal;
-			mannyLoaded = new Signal();
+		//	var Signal = signals.Signal;
+		//	mannyLoaded = new Signal();
 
 		//	var url = "/rlc/characters/HFStandingIdle02.fbx";
-			var url = "/rlc/characters/HFStandingIdle01.fbx";
+		//	var url = "/rlc/characters/HFStandingIdle01.fbx";
 
 			var loader = new THREE.FBXLoader();
-			loader.load( url, function( group ){
+			loader.load( "/rlc/characters/HFIdle.fbx", function( group ){
 
 				fbx = group; // debug!
 
@@ -1829,13 +2016,34 @@
 				(function(){
 
 					var animations = group.animations;
-					group.animations[0].name = "idling";
+					group.animations[0].name = "Idling";
 
 					animationController = new MW.AnimationController( group );
 					debugMode && console.log( "animations:", Object.keys( animationController.motion ).join() );
 
+				//	Bind events.
 					localPlayerController.addEventListener( "startIdling",  function () { 
-						animationController.play( "idling" ); 
+						animationController.play( "Idling" ); 
+					});
+
+					localPlayerController.addEventListener( "startWalking",  function () { 
+						animationController.play( "MediumRun" ); 
+
+					});
+
+					localPlayerController.addEventListener( "startSliding", function () { 
+						animationController.play( "Wobbling" ); 
+					});
+
+					localPlayerController.addEventListener( "startFalling", function () { 
+						animationController.play( "Wobbling" ); 
+					});
+
+					localPlayerController.addEventListener( "startJumping",  function () { 
+						animationController.motion.JumpingUp.setLoop( THREE.LoopOnce );
+						animationController.motion.JumpingUp.clampWhenFinished = true;
+						animationController.motion.JumpingUp.reset();
+						animationController.play( "JumpingUp" ); 
 					});
 
 				//	Animation droplist.
@@ -1843,9 +2051,9 @@
 					(function(){
 
 						var select = document.getElementById("animation-droplist");
-						Object.keys( animationController.motion ).forEach( function( name ){
-							select.appendChild( createOption( name ) );
-						});
+					//	Object.keys( animationController.motion ).forEach( function( name ){
+					//		select.appendChild( createOption( name ) );
+					//	});
 
 						select.addEventListener("change", function(){
 							var name = select.value;
