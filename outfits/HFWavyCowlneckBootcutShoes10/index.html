@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 
-		<title>WavyCowlneckBootcutShoes (RLC2011 v0)</title>
+		<title>WavyCowlneckBootcutShoes (RLC2011 v1)</title>
 
 		<meta charset="utf-8">
 		<meta name="generator" content="Three.js Editor">
@@ -199,6 +199,31 @@
 
 				})();
 
+			//	Show/Hide button.
+
+				(function(){
+
+					var row = document.createElement("h3");
+					row.style.cssText = "height:30px;";
+					var button = document.createElement("div");
+					button.textContent = "Hide Selected";
+					button.style.cssText = "max-width:60%;width:180px;height:40px;font-size:large;float:right;";
+					button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+					button.addEventListener( "click", function(){
+						var selected = document.getElementById("outfit-droplist").getItem();
+						if ( !selected ) return;
+						selected.visible = !selected.visible;
+						if ( selected.visible )
+							button.textContent = "Hide Selected";
+						else
+							button.textContent = "Show Selected";
+					});
+
+					row.appendChild( button );
+					tab.appendChild( row );
+				})();
+
 			//	Female Hair.
 
 				(function(){
@@ -232,7 +257,7 @@
 				(function(){
 
 					var row = document.createElement("h3");
-					row.textContent = "Upperbody";
+					row.textContent = "Torso";
 
 					var select = document.createElement("select");
 					select.id = "upperbody-droplist";
@@ -240,7 +265,7 @@
 						+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 						+ "font-size:20px;margin-left:10px;";
 
-					select.appendChild(createOption("Cowlneck"));
+					select.appendChild(createOption("CowlNeck"));
 
 					select.addEventListener( "change", function(){});
 
@@ -260,7 +285,7 @@
 				(function(){
 
 					var row = document.createElement("h3");
-					row.textContent = "Lowerbody";
+					row.textContent = "Legs";
 
 					var select = document.createElement("select");
 					select.id = "lowerbody-droplist";
@@ -1158,7 +1183,7 @@
 		//	var url = "/rlc/characters/HFStandingIdle01.fbx";
 
 			var loader = new THREE.FBXLoader();
-			loader.load( "/rlc/outfits/HFWavyCowlneckBootcutShoes10/HFWavyCowlneckBootcutShoes10_RLC2011.fbx", function( group ){
+			loader.load( "/rlc/outfits/HFWavyCowlneckBootcutShoes10/HFWavyCowlneckBootcutShoes10_RLC2011v1.fbx", function( group ){
 
 				fbx = group; // debug!
 
