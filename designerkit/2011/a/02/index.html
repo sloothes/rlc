@@ -58,6 +58,7 @@
 				right: calc(105px + 370px);
 			}
 
+			.btn-matcap,
 			.btn-terrain {
 				padding:0;
 				float:left;
@@ -69,7 +70,8 @@
 				margin-bottom:4px;
 				display:inline-block;
 			}
-			
+
+			.btn-matcap + .btn-matcap,
 			.btn-terrain + .btn-terrain {
 				margin-right:4px;
 			}
@@ -507,7 +509,7 @@
 
 						var button = document.createElement("div");
 						button.id = id;
-						button.classList.add("btn", "btn-white-outline", "btn-terrain");
+						button.classList.add("btn", "btn-white-outline", "btn-matcap");
 						button.style.cssText = "background-size:contain;background-image:url(https://i.imgur.com/"+id+"s.png);";
 					//
 						var url = "https://i.imgur.com/"+id+".png";   // TODO: cache matcaps.
@@ -546,6 +548,108 @@
 				}
 
 				tab.appendChild( container );
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	Eyes Tab.
+
+			(function(){
+
+				var tab = TabUI.Eyes.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "Eyes";
+
+				var Signal = signals.Signal;
+				eyeSelected = new Signal();
+
+				var select = document.createElement("select");
+				select.id = "eyes-droplist";
+				select.style.cssText = "width:180px;color:#000;" // float:left;
+					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+					+ "font-size:20px;margin-left:10px;";
+
+				row.appendChild( select );
+			//	tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+				var material;
+				var textures = {};
+				var tab = TabUI.Eyes.tab;
+			//	var Signal = signals.Signal;
+			//	var matcapSelected = new Signal();
+
+				textures.dispose = function(){
+					for (var uuid in this ) {
+						var texture = this[ uuid ];
+						texture.dispose && texture.dispose();
+					}
+				}
+
+				var matcaps = (
+					"eJKcnE2,cP0cGiD,5V0Z1RY,JVIBbWb,fnCXQ5h,Si5QWl0,pbHb2gF,"
+				  + "uOdn2Mb,GPouWSo,VybEXWo,kDySexw,8qtMndS,CoIQWMJ,zHVpCoV,"
+				  + "5V0Z1RY,"
+				).split(",");
+
+				matcaps.pop(); // removes last empty item. (important!)
+
+				var container = document.createElement("div");
+				container.id = "eyes-matcap-buttons";
+				container.style.width = "300px";
+
+				while ( matcaps.length ) {
+					(function( id ){
+
+						var button = document.createElement("div");
+						button.id = id;
+						button.classList.add("btn", "btn-white-outline", "btn-matcap");
+						button.style.cssText = "background-size:contain;background-image:url(https://i.imgur.com/"+id+"s.png);";
+					//
+						var url = "https://i.imgur.com/"+id+".png";   // TODO: cache matcaps.
+						var loader = new THREE.ImageLoader();
+						loader.setCrossOrigin("anonymous");						// important!
+						loader.load( url, function( image ){
+							var mapping = THREE.SphericalReflectionMapping;		// important!
+							var texture = new THREE.Texture( image, mapping );	// important!
+							texture.sourceFile = url;							// important!
+							textures[ texture.uuid ] = texture;
+							button.setAttribute("uuid", texture.uuid);
+							container.appendChild( button );
+						});
+					//
+						button.addEventListener( "click", function(){
+						//	var select = document.getElementById("eyes-droplist");
+							var selected = scene.getObjectByName("HF_Fullbody_Nude");
+							if ( !selected ) return;
+							var material = selected.material.find(function( item ){
+								return item.name == "HF_Eyes_Material";
+							}); if ( !material ) return;
+							(function(){
+								var uuid = button.getAttribute("uuid");
+								material.roughness = 0;
+								material.metalness = 1;
+								material.envMap = textures[ uuid ];
+								material.envMap.needsUpdate = true;
+								material.needsUpdate = true;
+							})();
+							textures.dispose();
+						});
+
+					})( matcaps.shift() );
+
+				}
+
+				tab.appendChild( container );
+
+
 
 			})();
 
