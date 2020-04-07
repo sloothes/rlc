@@ -347,6 +347,7 @@
 
 				(function(){
 
+					var shoes = []; // important!
 					var row = document.createElement("h3");
 					row.textContent = "Shoes";
 
@@ -356,27 +357,47 @@
 						+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 						+ "font-size:20px;margin-left:10px;";
 
-					select.appendChild(createOption("Shoes01"));
-					select.appendChild(createOption("Shoes02"));
-					select.appendChild(createOption("Shoes03"));
-					select.appendChild(createOption("Shoes04"));
-					select.appendChild(createOption("Shoes05"));
-					select.appendChild(createOption("Shoes06"));
-					select.appendChild(createOption("Shoes07"));
-					select.appendChild(createOption("Shoes08"));
-					select.appendChild(createOption("Shoes09"));
-					select.appendChild(createOption("Shoes10"));
-					select.appendChild(createOption("Shoes11"));
-					select.appendChild(createOption("Shoes12"));
-					select.appendChild(createOption("Shoes13"));
-					select.appendChild(createOption("Shoes14"));
-					select.appendChild(createOption("Shoes15"));
-					select.appendChild(createOption("Shoes16"));
-					select.appendChild(createOption("Shoes17"));
-					select.appendChild(createOption("Shoes18"));
-					select.appendChild(createOption("Shoes19"));
-					select.appendChild(createOption("Shoes20"));
-					select.appendChild(createOption("Shoes21"));
+					select.appendChild(createOption("HFShoes01"));
+					select.appendChild(createOption("HFShoes02"));
+					select.appendChild(createOption("HFShoes03"));
+					select.appendChild(createOption("HFShoes04"));
+					select.appendChild(createOption("HFShoes05"));
+					select.appendChild(createOption("HFShoes06"));
+					select.appendChild(createOption("HFShoes07"));
+					select.appendChild(createOption("HFShoes08"));
+					select.appendChild(createOption("HFShoes09"));
+					select.appendChild(createOption("HFShoes10"));
+					select.appendChild(createOption("HFShoes11"));
+					select.appendChild(createOption("HFShoes12"));
+					select.appendChild(createOption("HFShoes13"));
+					select.appendChild(createOption("HFShoes14"));
+					select.appendChild(createOption("HFShoes15"));
+					select.appendChild(createOption("HFShoes16"));
+					select.appendChild(createOption("HFShoes17"));
+					select.appendChild(createOption("HFShoes18"));
+					select.appendChild(createOption("HFShoes19"));
+					select.appendChild(createOption("HFShoes20"));
+					select.appendChild(createOption("HFShoes21"));
+
+					select.addMesh = function( mesh ){
+						shoes.push( mesh );
+					};
+
+					select.getMeshByName = function( name ){
+						return shoes.find(function( item ){
+							return item.name == name;
+						});
+					};
+
+					select.getMeshByUUID = function( uuid ){
+						return shoes.find(function( item ){
+							return item.uuid == uuid;
+						});
+					};
+
+					select.getMeshes = function(){
+						return shoes;
+					};
 
 					select.addEventListener( "change", function(){});
 
@@ -385,9 +406,32 @@
 
 					function createOption(name, value){
 						var option = document.createElement("option");
-						option.text = option.value = name;
+						option.text = name;
+						option.value = value;
 						return option;
 					}
+
+				})();
+				
+			//	Add shoes.
+				
+				(function(){
+					
+					var select = document.getElementById("shoes-droplist");
+					var loader = new THREE.FBXLoader();
+					loader.load( "/rlc/outfit/shoes/HFShoes01.fbx", function( group ){
+
+						shoe = group; // debug!
+
+						debugMode && console.log( group ); 
+
+
+
+
+
+
+
+					});
 
 				})();
 
