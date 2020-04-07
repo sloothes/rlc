@@ -2212,11 +2212,11 @@
 			(function(){
 
 				var loader = new THREE.FBXLoader();
-				loader.load( "/rlc/designerkit/2011/outfit/shoes/HFShoes01.fbx", function( group ){
+				loader.load( "/rlc/designerkit/2011/outfit/shoes/HFShoes07.fbx", function( group ){
 
 					HFShoes = group; // debug!
 
-					group.name = "RLC_HFShoes_01";
+					group.name = "RLC_HFShoes_07";
 					var s = 0.00033; group.scale.set(s,s,s); // important!
 					debugMode && console.log( group );
 				//	Replace materials.
@@ -2227,7 +2227,7 @@
 							child.receiveShadow = true;	
 						}
 
-						if (child.name == "HF_Shoes01") {
+						if (child.name == "HF_Shoes07") {
 							if ( Array.isArray(child.material) ) {
 								child.material = child.material.map( function( item ){
 									var name = item.name;
