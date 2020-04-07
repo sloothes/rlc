@@ -2043,6 +2043,14 @@
 					);
 				})();
 
+/*
+			//	CleanUp animation names.
+				var animations = group.animations;
+				animations.forEach( function( clip ){
+					clip.name = clip.name.replace("Armature|", "").toLowerCase();
+				});
+				debugMode && console.log( animations ); 
+*/
 
 			//	Animation controller.
 
@@ -2073,14 +2081,10 @@
 					});
 
 					localPlayerController.addEventListener( "startJumping",  function () { 
-						if ( localPlayerController.isRunning ) {
-						//	animationController.motion.RunningJump.setDuration(1.0);
-							animationController.motion.RunningJump.reset();
-							animationController.play( "RunningJump" ); 
-						} else {
-						//	animationController.motion.FallingIdle.reset();
-							animationController.play( "FallingIdle" ); 
-						}
+						animationController.motion.JumpingUp.setLoop( THREE.LoopOnce );
+						animationController.motion.JumpingUp.clampWhenFinished = true;
+						animationController.motion.JumpingUp.reset();
+						animationController.play( "JumpingUp" ); 
 					});
 
 				//	Animation droplist.
