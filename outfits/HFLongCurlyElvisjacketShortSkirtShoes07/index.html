@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 
-		<title>CurlyJacketSkirtShoes (RLC2011 v1)</title>
+		<title>CurlyJacketSkirtShoes (RLC2011 v2)</title>
 
 		<meta charset="utf-8">
 		<meta name="generator" content="Three.js Editor">
@@ -120,6 +120,7 @@
 				var skinTab = TabUI.add( "Skin", "skin-tab" );
 				var eyesTab = TabUI.add( "Eyes", "eyes-tab" );
 				var hairTab = TabUI.add( "Hair", "hair-tab" );
+				var shoeTab = TabUI.add( "Shoes", "shoe-tab" );
 				var debugTab = TabUI.add( "Debug", "debug-tab" );
 				var outfitTab = TabUI.add( "Outfit", "outfit-tab" );
 				var materialTab = TabUI.add( "Materials", "material-tab" );
@@ -132,7 +133,7 @@
 			//	var underwearTab = TabUI.add( "Underwears", "underwears-tab" );
 
 				document.body.appendChild( sidePanel );
-				TabUI.append("Outfit", "Materials", "Animations", "Skin", "Eyes", "Hair", "Debug" );
+				TabUI.append("Outfit", "Materials", "Animations", "Skin", "Eyes", "Hair", "Shoes", "Debug" );
 				TabUI.Outfit.role.classList.add("active");
 				TabUI.Outfit.tab.classList.add("in","active");
 
@@ -146,15 +147,17 @@
 
 			(function(){
 
-				var Signal = signals.Signal;
+				var slots = {};
+				currentSlot = null;
 				var tab = TabUI.Outfit.tab;
+				var Signal = signals.Signal;
 
 			//	Female Outfit.
 
 				(function(){
 
 					var row = document.createElement("h3");
-					row.textContent = "Outfit";
+					row.textContent = "Outfit Slot";
 
 					var select = document.createElement("select");
 					select.id = "outfit-droplist";
@@ -162,20 +165,35 @@
 						+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 						+ "font-size:20px;margin-left:10px;";
 
-					select.appendChild(createOption("Nudebody"));
-					select.appendChild(createOption("LongCurly"));
-					select.appendChild(createOption("ElvisShirt"));
-					select.appendChild(createOption("ShortSkirt"));
-					select.appendChild(createOption("Shoes07"));
+					select.appendChild(createOption("Body"));
+					select.appendChild(createOption("Hair"));
+					select.appendChild(createOption("Shirt"));
+					select.appendChild(createOption("Skirt"));
+					select.appendChild(createOption("Shoes"));
 
-					select.addEventListener( "change", function(){});
+					select.addItem = function(key, item){
+						slots[ key.toLowerCase() ] = item;
+					};
+					
+					select.getItem = select.getSlotItem = function(){
+						return slots[ select.value ];
+					};
+					
+					select.getItems = select.getSlotItems = function(){
+						return slots;
+					};
+
+					select.addEventListener( "change", function(){
+						currentSlot = this.value;
+					});
 
 					row.appendChild( select );
 					tab.appendChild( row );
 
 					function createOption(name, value){
 						var option = document.createElement("option");
-						option.text = option.value = name;
+						option.text = name;
+						option.value = name.toLowerCase();
 						return option;
 					}
 
@@ -1185,8 +1203,6 @@
 				var s = 0.00033; group.scale.set(s,s,s); // important!
 			//	group.position.y = -localPlayerController.radius;
 				debugMode && console.log( group ); 
-
-			//	Replace materials.
 				group.traverse( function( child ){
 
                     if (child.isMesh) {	
@@ -1194,8 +1210,9 @@
                         child.receiveShadow = true;	
                     }
 
-                    if (child.isMesh) {	
-						debugMode && console.log( child );
+				//	Replace materials.
+                    if (child.isMesh) (function(child){
+						var select = document.getElementById("material-droplist");
 
 						if ( Array.isArray(child.material) ) {
 							child.material = child.material.map( function( item ){
@@ -1205,7 +1222,6 @@
 								});
 							});
 							child.material.forEach( function( material ){
-								var select = document.getElementById("material-droplist");
 								select.addItem( material );
 							});
 
@@ -1216,32 +1232,46 @@
 								name:name, skinning:true, // important!
 							});
 							(function( material ){
-								var select = document.getElementById("material-droplist");
 								select.addItem( material );
 							})( child.material );
 
 						}
 
 						debugMode && console.log( child.material ); 
-                    }
+                    })( child );
+
+                    if (child.isMesh) (function(child){
+						var select = document.getElementById("outfit-droplist");
+
+						switch( child.name ){
+
+							case "HF_Fullbody_Nude":
+								select.addItem("body", child);
+							break;
+
+							case "HF_Hair_Long_Curly":
+								select.addItem("hair", child);
+							break;
+
+							case "HF_Upperbody_ElvisJacket":
+								select.addItem("shirt", child);
+							break;
+
+							case "HF_Lowerbody_ShortSkirt":
+								select.addItem("skirt", child);
+							break;
+
+							case "HF_Shoes07":
+								select.addItem("shoes", child);
+							break;
+
+						}
+
+                    })( child );
 
 				});
 
 			/*
-			//	Create material options.
-				group.traverse( function( child ){
-                    if ( !child.isMesh ) return;
-					if ( !child.material ) return;
-					var select = document.getElementById("material-droplist");
-					if ( Array.isArray(child.material) ) {
-						child.material.forEach(function( material ){
-							select.addItem( material );
-						});
-					} else {
-						select.addItem( child.material );
-					}
-				});
-
 				(function(){
 					var url = "https://i.imgur.com/7jwTUiI.png";
 					var loader = new THREE.ImageLoader();
