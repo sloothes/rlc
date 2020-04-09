@@ -149,34 +149,13 @@
 
 			//	Outfit Manager.
 
-				Signal = signals.Signal;
-
-				OutfitManager = {
-
-					currentSlot: null,
-					currentLayer: null,
-
-					hatDroplistUpdated: new Signal(),
-					hairDroplistUpdated: new Signal(),
-					outfitDroplistUpdated: new Signal(),
-
-				};
-
-				watch( OutfitManager, "currentSlot", function(prop, action, value){
-					debugMode && console.log( prop, action, value );
-					document.getElementById("outfit-droplist").value = value;
-				});
-
-				watch( OutfitManager, "currentLayer", function(prop, action, value){
-					debugMode && console.log( prop, action, value );
-					document.getElementById("layer-droplist").value = value;
-				});
-
 			})();
 
 			(function(){
 
 			//	Layer Slot.
+
+				currentLayer = null;
 
 				var layers = {
 					skin:      null,
@@ -187,6 +166,8 @@
 					bodypaint: null,
 					underwear: null,
 				};
+
+				var Signal = signals.Signal;
 
 				var tab = TabUI.Outfit.tab;
 				var row = document.createElement("h3");
@@ -206,24 +187,21 @@
 				select.appendChild(createOption("Bodypaint"));
 				select.appendChild(createOption("Underwear"));
 
-				select.addEventListener( "change", function(){
-					OutfitManager.currentLayer = this.value;
-				});
-
-				OutfitManager.addLayer = 
-				OutfitManager.setLayerValue = function(key, item){
+				select.addItem = function(key, item){
 					layers[ key.toLowerCase() ] = item;
 				};
 
-				OutfitManager.getLayer = 
-				OutfitManager.getLayerValue = function(){
+				select.getItem = select.getSlotItem = function(){
 					return layers[ select.value ];
 				};
 
-				OutfitManager.getLayers = 
-				OutfitManager.getLayerItems = function(){
+				select.getItems = select.getSlotItems = function(){
 					return layers;
 				};
+
+				select.addEventListener( "change", function(){
+					currentLayer = this.value;
+				});
 
 				row.appendChild( select );
 				tab.appendChild( row );
@@ -241,6 +219,8 @@
 
 			//	Outfit slot.
 				
+				currentSlot = null;
+
 				var slots = {
 					hair:  null,
 					body:  null,
@@ -250,10 +230,34 @@
 					glasses: null,
 				};
 
+				var Signal = signals.Signal;
+				var outfitDroplistUpdated = new Signal();
+
+				outfitDroplistUpdated.add( function( uuid ){
+
+					var droplist = document.getElementById("material-droplist");
+					if ( !droplist ) throw "material-droplist not found!";
+
+					while ( droplist.options.length ){
+						droplist.options.remove(0);
+					}
+
+					if ( !uuid ) return; // important!
+					
+					var mesh = scene.getObjectByProperty("uuid", uuid );
+					if ( !mesh ) throw "outfit mesh not found!";
+
+					if ( Array.isArray(mesh.material) ) 
+						mesh.material.forEach(function( material ){
+							droplist.addItem( material );
+						});
+					else droplist.addItem( mesh.material );
+
+				});
+
 				var tab = TabUI.Outfit.tab;
 				var row = document.createElement("h3");
 				row.textContent = "Outfit";
-				row.title = "Outfit manager";
 
 				var select = document.createElement("select");
 				select.id = "outfit-droplist";
@@ -268,54 +272,23 @@
 				select.appendChild(createOption("Shoes"));
 				select.appendChild(createOption("Glasses"));
 
-				select.addEventListener( "change", function(){
-					var key = this.value.toLowerCase();
-					OutfitManager.currentSlot = key; // important!
-					OutfitManager.outfitDroplistUpdated.dispatch( slots[ key ] ); // uuid.
-				});
-
-				OutfitManager.add = 
-				OutfitManager.addItem = function(key, item){
+				select.addItem = function(key, item){
 					slots[ key.toLowerCase() ] = item;
 				};
 
-				OutfitManager.getItem = 
-				OutfitManager.getSlotValue = 
-				OutfitManager.get = function( key ){
-					if ( key ) return slots[ key.toLowerCase() ];
-					else return slots[ select.value.toLowerCase() ];
+				select.getItem = select.getSlotItem = function( key ){
+					if ( key ) return slots[ key ];
+					else return slots[ select.value ];
 				};
 
-				OutfitManager.getItems = 
-				OutfitManager.getSlotItems = function(){
+				select.getItems = select.getSlotItems = function(){
 					return slots;
 				};
 
-				OutfitManager.setValue = 
-				OutfitManager.setSlotValue = 
-				OutfitManager.set = function( key, value ){
-					slots[ key.toLowerCase() ] = value; // uuid.
-				};
-
-				OutfitManager.outfitDroplistUpdated.add( function( uuid ){
-
-					var select = document.getElementById("material-droplist");
-					if ( !select ) throw "outfitDroplistUpdated: select not found!";
-
-					while ( select.options.length ){ select.options.remove(0); }
-
-					if ( !uuid ) return; // important!
-					
-					var mesh = scene.getObjectByProperty("uuid", uuid );
-					if ( !mesh ) throw "outfitDroplistUpdated: mesh not found!";
-
-					if ( Array.isArray(mesh.material) ) 
-						mesh.material.forEach(function( material ){
-							select.addItem( material );
-						});
-
-					else select.addItem( mesh.material );
-
+				select.addEventListener( "change", function(){
+					currentSlot = this.value;
+					var uuid = slots[ this.value ];
+					outfitDroplistUpdated.dispatch( uuid );
 				});
 
 				row.appendChild( select );
@@ -335,6 +308,8 @@
 			(function(){
 
 				var tab = TabUI.Outfit.tab;
+				var Signal = signals.Signal;
+
 				var row = document.createElement("h3");
 				row.style.cssText = "height:40px;";
 
@@ -350,26 +325,23 @@
 						button.textContent = "Show Selected Outfit";
 				};
 
+				(function(){
+					var select = document.getElementById("outfit-droplist");
+					if ( !select ) throw "droplist not found!";
+					select.addEventListener( "change", function(){
+						if ( !select.getItem() ) throw "slot is null!";
+						button.update( select.getItem().visible );
+					});
+				})();
+
 				button.addEventListener( "click", function(){
 					var select = document.getElementById("outfit-droplist");
-					if ( !select ) throw "outfit-droplist not found!";
-					var uuid = OutfitManager.get( select.value );
-					var selected = scene.getObjectByProperty( "uuid", uuid );
-					if ( !selected ) throw "selected mesh not found!";
+					if ( !select ) throw "droplist not found!";
+					var selected = scene.getObjectByProperty("uuid", select.getItem() );
+					if ( !selected ) throw "outfit item not found!";
 					selected.visible = !selected.visible;
 					button.update( selected.visible );
 				});
-
-				(function( select ){
-					if ( !select ) throw "select not found!";
-					select.addEventListener( "change", function(){
-						var uuid = OutfitManager.get( select.value );
-						if ( !uuid ) throw "slot "+select.value+" is null!";
-						var mesh = scene.getObjectByProperty("uuid", uuid );
-						if ( !mesh ) throw "selected mesh not found!";
-						button.update( mesh.visible );
-					});
-				})( document.getElementById("outfit-droplist") );
 
 				row.appendChild( button );
 				tab.appendChild( row );
@@ -381,51 +353,28 @@
 			(function(){
 
 				var tab = TabUI.Outfit.tab;
+				var Signal = signals.Signal;
+
 				var row = document.createElement("h3");
 				row.textContent = "Hat";
 
 				var select = document.createElement("select");
 				select.id = "hat-droplist";
 				select.style.cssText = "width:180px;color:#000;float:right;"
-				+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
-				+ "font-size:20px;margin-left:10px;";
+					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+					+ "font-size:20px;margin-left:10px;";
 
 				select.appendChild(createOption("no hat", ""));
 				select.appendChild(createOption("Ski"));
 				select.appendChild(createOption("Witch"));
 				select.appendChild(createOption("Nurse"));
-				select.appendChild(createOption("Santa"));
+				select.appendChild(createOption("Sanda"));
 				select.appendChild(createOption("Sailor"));
 				select.appendChild(createOption("Indian"));
 				select.appendChild(createOption("Catwoman"));
 
 				select.addEventListener( "change", function(){
-					OutfitManager.currentSlot = "hair"; // important!
-					OutfitManager.hatDroplistUpdated.dispatch( this.value ); // uuid.
-				});
-
-			//	Hide current hairs.
-				OutfitManager.hatDroplistUpdated.add( function(){
-					if ( !OutfitManager.get("hair") ) return; // important!
-					var uuid = OutfitManager.get("hair");
-					var mesh = scene.getObjectByProperty("uuid", uuid );
-					if ( !mesh ) throw "hatDroplistUpdated: hair not found!";
-					mesh.visible = false; OutfitManager.setValue("hair", null);
-				});
-
-			//	Show selected hairs.
-				OutfitManager.hatDroplistUpdated.add( function( uuid ){
-
-					if ( !uuid ) { 
-						OutfitManager.outfitDroplistUpdated.dispatch( null ); // important!
-						return false; // stop propagetion.
-					}
-
-					var mesh = scene.getObjectByProperty("uuid", uuid );
-					if ( !mesh ) throw "hatDroplistUpdated: hat not found!";
-					mesh.visible = true; OutfitManager.setValue("hair", uuid);
-
-					OutfitManager.outfitDroplistUpdated.dispatch( uuid ); // important!
+				
 				});
 
 				row.appendChild( select );
@@ -684,28 +633,17 @@
 
 			(function(){
 
-			//	Material manager.
+			//	Outfit material droplist.
 
-				MaterialManager = {
-					matcapSelected: new Signal(),
-					currentMaterial: null, // uuid.
-				};
-
-				watch( MaterialManager, "currentMaterial", function(prop, action, value){
-					debugMode && console.log( prop, action, value );
-				});
-
-			})();
-
-			(function(){
-
-			//	Material droplist.
-
-				var currentMaterial = null;
+				var materials = [];
+				currentMaterial = null;
 
 				var tab = TabUI.Materials.tab;
 				var row = document.createElement("h3");
 				row.textContent = "Material";
+
+				var Signal = signals.Signal;
+				materialSelected = new Signal();
 
 				var select = document.createElement("select");
 				select.id = "material-droplist";
@@ -714,11 +652,34 @@
 				+ "font-size:20px;margin-left:10px;";
 
 				select.addItem = function( item ){
+					materials.push( item );
 					createOption(item.name, item.uuid);
 				};
 
+				select.getItemByName = select.getMaterialByName = function( name ){
+					return materials.find(function( item ){
+						return item.name == name;
+					});
+				};
+
+				select.getItemByUUID = select.getMaterialByUUID = function( uuid ){
+					return materials.find(function( item ){
+						return item.uuid == uuid;
+					});
+				};
+
+				select.getItems = select.getMaterials = function(){
+					return materials;
+				};
+				
+				select.getItem = select.getMaterial = function(){
+					return materials.find(function( item ){
+						return item.uuid == select.value;
+					});
+				};
+
 				select.addEventListener("change", function(){
-					MaterialManager.currentMaterial = this.value; // uuid.
+					currentMaterial = select.getItemByUUID( this.value );
 				});
 
 				row.appendChild( select );
@@ -733,27 +694,6 @@
 
 			})();
 
-/*
-				select.getItemByName = select.getMaterialByName = function( name ){
-					return materials.find(function( item ){
-						return item.name == name;
-					});
-				};
-				select.getItemByUUID = select.getMaterialByUUID = function( uuid ){
-					return materials.find(function( item ){
-						return item.uuid == uuid;
-					});
-				};
-				select.getItems = select.getMaterials = function(){
-					return materials;
-				};
-				select.getItem = select.getMaterial = function(){
-					return materials.find(function( item ){
-						return item.uuid == select.value;
-					});
-				};
-*/
-
 			(function(){
 
 				var textures = {};
@@ -764,27 +704,39 @@
 					}
 				}
 
-				MaterialManager.matcapSelected.add( function( material ){
+				var Signal = signals.Signal;
+				var matcapSelected = new Signal();
 
-					var currentSlot = OutfitManager.currentSlot;
-					if ( !currentSlot ) return false; // stop propagination.
-					var uuid = OutfitManager.get(currentSlot); // important!
-					if ( !uuid ) return false; // stop propagination.
+				matcapSelected.add( function( material ){
+					var select = document.getElementById("outfit-droplist");
 
-					var mesh = scene.getObjectByProperty("uuid", uuid );
-					if ( !mesh ) throw "outfit mesh not found!"; 
-					if ( !mesh.visible ) return false; // stop propagination.
+					if ( !select ) {
+						console.error( "outfit droplist not found!" ); 
+						return false; // stop propagetion.
+					}
+
+					var mesh = scene.getObjectByProperty("uuid", select.getItem() );
+
+					if ( !mesh ) {
+						console.error( "outfit mesh not found!" ); 
+						return false; // stop propagetion.
+					}
+
+					if ( !mesh.visible ) return false; // stop propagetion.
 					
 					if ( Array.isArray( mesh.material ) ) {
+
 						if ( mesh.material.find( function( item ){
 							return item.uuid == material.uuid;
-						}) == null ) return false;  // stop propagination.
+						}) == undefined ) return false;  // stop propagetion.
+
 					} else {
-						if ( mesh.material.uuid != material.uuid ) return false; // stop propagination.
+
+						if ( mesh.material.uuid != material.uuid ) return false; // stop propagetion.
 					}
 				});
 
-				MaterialManager.matcapSelected.add( function( material, uuid ){
+				matcapSelected.add( function( material, uuid ){
 					if ( !material ) throw "material is null!";
 					if ( !material.visible ) return; // important!
 					material.roughness = 0;
@@ -792,7 +744,6 @@
 					material.envMap = textures[ uuid ];
 					material.envMap.needsUpdate = true;
 					material.needsUpdate = true;
-					textures.dispose();
 				});
 
 				var matcaps = (
@@ -839,12 +790,12 @@
 
 						button.addEventListener( "click", function(){
 							var select = document.getElementById("material-droplist");
-							if ( !select ) throw "material-droplist not found!";
-							if ( !select.value ) return; // important!
-							var material = MaterialManager.getByUUID( select.value );
-							if ( !material ) throw "material not found!";
+							if ( !select ) throw "droplist not found!";
+							var material = select.getMaterial();
+							if ( !material ) throw "none material selected!";
 							var uuid = button.getAttribute("uuid");
-							MaterialManager.matcapSelected.dispatch( material, uuid );
+							matcapSelected.dispatch( material, uuid );
+							textures.dispose();
 						});
 
 					})( matcaps.shift() );
@@ -865,56 +816,46 @@
 				var tab = TabUI.Materials.tab;
 				var row = document.createElement("h3");
 				row.textContent = "Manager";
-				row.title = "Material Manager";
 
 				var Signal = signals.Signal;
-			//	materialSelected = new Signal();
+				materialSelected = new Signal();
 
 				var select = document.createElement("select");
-				select.id = "material-manager";
+				select.id = "material-manager-droplist";
 				select.style.cssText = "width:180px;color:#000;" // float:left;
 					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 					+ "font-size:20px;margin-left:10px;";
 
-				select.addEventListener("change", function(){
-					material = MaterialManager.getByUUID( this.value );
-				});
-
-				MaterialManager.addItem = 
-				MaterialManager.addMaterial = 
-				MaterialManager.add = function( item ){
+				select.addItem = function( item ){
 					materials.push( item );
 					createOption(item.name, item.uuid);
 				};
 
-				MaterialManager.getItemByName = 
-				MaterialManager.getMaterialByName = 
-				MaterialManager.getByName = function( name ){
+				select.getItemByName = select.getMaterialByName = function( name ){
 					return materials.find(function( item ){
 						return item.name == name;
 					});
 				};
 
-				MaterialManager.getItemByUUID = 
-				MaterialManager.getMaterialByUUID = 
-				MaterialManager.getByUUID = function( uuid ){
+				select.getItemByUUID = select.getMaterialByUUID = function( uuid ){
 					return materials.find(function( item ){
 						return item.uuid == uuid;
 					});
 				};
 
-				MaterialManager.getItems = 
-				MaterialManager.getMaterials = function(){
+				select.getItems = select.getMaterials = function(){
 					return materials;
 				};
-
-				MaterialManager.getItem = 
-				MaterialManager.getMaterial = 
-				MaterialManager.get = function(){
+				
+				select.getItem = select.getMaterial = function(){
 					return materials.find(function( item ){
 						return item.uuid == select.value;
 					});
 				};
+
+				select.addEventListener("change", function(){
+					material = select.getItemByUUID( this.value );
+				});
 
 				row.appendChild( select );
 				tab.appendChild( row );
@@ -948,20 +889,19 @@
 						button.textContent = "Show Selected";
 				};
 
-				(function( select ){
-					if ( !select ) throw "material manager select not found!";
+				(function(){
+					var select = document.getElementById("material-manager-droplist");
+					if ( !select ) return;
 					select.addEventListener( "change", function(){
-						var selected = MaterialManager.get();
-						if ( !selected ) throw "selected material not found!";
-						button.update( selected.visible );
+						button.update( select.getItem().visible );
 					});
-				})( document.getElementById("material-manager") );
+				})();
 
 				button.addEventListener( "click", function(){
-					var select = document.getElementById("material-manager");
-					if ( !select ) throw "material manager select not found!";
-					var selected = MaterialManager.get(); // material.
-					if ( !selected ) throw "selected material not found!";
+					var select = document.getElementById("material-manager-droplist");
+					if ( !select ) throw "droplist not found!";
+					var selected = select.getItem();
+					if ( !selected ) throw "nothing selected!";
 					selected.visible = !selected.visible;
 					button.update( selected.visible );
 				});
@@ -1668,7 +1608,7 @@
 
 				//	Replace materials.
                     if (child.isMesh) (function(child){
-					//	var select = document.getElementById("material-manager");
+						var select = document.getElementById("material-manager-droplist");
 
 						if ( Array.isArray(child.material) ) {
 							child.material = child.material.map( function( item ){
@@ -1678,7 +1618,7 @@
 								});
 							});
 							child.material.forEach( function( material ){
-								MaterialManager.addItem( material );
+								select.addItem( material );
 							});
 
 						} else {
@@ -1688,41 +1628,21 @@
 								name:name, skinning:true, // important!
 							});
 							(function( material ){
-								MaterialManager.addItem( material );
+								select.addItem( material );
 							})( child.material );
 
 						}
-
 					//	debugMode && console.log( child.material );
                     })( child );
 
-
-				//	Set option values.
-
                     if (child.isMesh) (function(child){
-
-						var selector = "option[value="+child.name+"]";
-						//	debugMode && console.log( selector );
-						var element = document.querySelector(selector);
-						if ( element ) {
-							element.value = child.uuid;
-							debugMode && console.log( element );
-						}
-
-                    })( child );
-
-
-				//	Init female outfit.
-
-                    if (child.isMesh) (function(child){
-
 						var select = document.getElementById("outfit-droplist");
+
 						switch( child.name ){
 
 							case "HF_Hair_Med":
 								child.visible = true;
-								OutfitManager.addItem("hair", child.uuid);
-								OutfitManager.currentSlot = "hair"; // important!
+								select.addItem("hair", child.uuid);
 
 								if ( Array.isArray(child.material) ) child.material.forEach(function( material ){
 									document.getElementById("material-droplist").addItem( material );
@@ -1736,22 +1656,22 @@
 
 							case "HF_Nudebody":
 								child.visible = true;
-								OutfitManager.addItem("body", child.uuid);
+								select.addItem("body", child.uuid);
 							break;
 
 							case "HF_Tanktop":
 								child.visible = true;
-								OutfitManager.addItem("torso", child.uuid);
+								select.addItem("torso", child.uuid);
 							break;
 
 							case "HF_Frilly_Skirt":
 								child.visible = true;
-								OutfitManager.addItem("legs", child.uuid);
+								select.addItem("legs", child.uuid);
 							break;
 
 							case "HF_Shoes_07":
 								child.visible = true;
-								OutfitManager.addItem("shoes", child.uuid);
+								select.addItem("shoes", child.uuid);
 							break;
 								
 							default:
