@@ -1610,6 +1610,8 @@
 						color:0x829ec4,
 					})
 				);
+				
+				ground.position.y = 0.3;
 
 			//	We need only the geometry of the ground
 			//	so there is not need to add to the scene.
@@ -2136,7 +2138,7 @@
 
 					model = gltf.scene;
 
-					model.scale.set(1,1,1);
+					model.scale.set(0.25,0.25,0.25);
 
 					model.traverse((o) => {
 					 if (o.isMesh) {
@@ -2151,7 +2153,6 @@
 							 city.streetLights.push(o);
 						 }
 
-
 					 }});
 
 
@@ -2161,9 +2162,9 @@
 						for(y=-1;y<3;y++){
 							debugMode && console.log({x,y});
 							city.block.push(model.clone())
-							city.block[city.block.length-1].position.z = box.max.z + box.getSize(model).z * x;
-							city.block[city.block.length-1].position.x = box.min.x + box.getSize(model).x * -y;
-							city.block[city.block.length-1].position.y = 0;
+							city.block[city.block.length-1].position.z = box.max.z + box.getSize(new THREE.Vector3()).z * x;
+							city.block[city.block.length-1].position.x = box.min.x + box.getSize(new THREE.Vector3()).x * -y;
+							city.block[city.block.length-1].position.y = 30;
 							scene.add(city.block[city.block.length-1]);
 						}
 					}
