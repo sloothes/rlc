@@ -1690,7 +1690,7 @@
 						el: renderer.domElement,
 						offset: new THREE.Vector3( 0, 0, 0 ), // eye height.
 						radius: 25, // default distance of the character to the camera.
-						minRadius: 25,
+						minRadius: 0.1,
 						maxRadius: 45,
 						rigidObjects: [],
 					}
@@ -2120,6 +2120,60 @@
 			});
 
 		</script>
+
+
+		<script>
+
+			(function(){
+
+				var city = {
+					streetLights : [],
+					block:[]
+				};
+
+				var loader = new THREE.GLTFLoader();
+				loader.load("/rlc/designerkit/2011/city.gltf",function(gltf){
+
+					model = gltf.scene;
+
+					model.scale.set(1,1,1);
+
+					model.traverse((o) => {
+					 if (o.isMesh) {
+
+						o.castShadow = true;
+						o.receiveShadow = true;
+						 o.material = new THREE.MeshPhongMaterial({
+							 map : o.material.map,
+						 })
+
+						 if(o.name.includes("Light") && !o.name.includes("BULB")){
+							 city.streetLights.push(o);
+						 }
+
+
+					 }});
+
+
+					var box = new THREE.Box3().setFromObject(model);
+					debugMode && console.log(box.max,box.min,box.getSize());
+					for(x=-1;x<3;x++){
+						for(y=-1;y<3;y++){
+							debugMode && console.log({x,y});
+							city.block.push(model.clone())
+							city.block[city.block.length-1].position.z = box.max.z + box.getSize(model).z * x;
+							city.block[city.block.length-1].position.x = box.min.x + box.getSize(model).x * -y;
+							city.block[city.block.length-1].position.y = 0;
+							scene.add(city.block[city.block.length-1]);
+						}
+					}
+
+				})
+
+			})();
+
+		</script>
+
 
 		<script>
 
