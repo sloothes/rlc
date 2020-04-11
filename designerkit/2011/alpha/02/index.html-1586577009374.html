@@ -2129,8 +2129,8 @@
 			(function(){
 
 				var city = {
-					block:[],
 					streetLights : [],
+					block:[]
 				};
 
 				var loader = new THREE.GLTFLoader();
@@ -2147,8 +2147,8 @@
 
 							child.castShadow = false;
 							child.receiveShadow = true;
-							child.material = new THREE.MeshLambertMaterial({
-								map:child.material.map, side:2,
+							child.material = new THREE.MeshStandardMaterial({
+								map : child.material.map,
 							})
 
 							if (child.name.includes("Light") && !child.name.includes("BULB")){
@@ -2159,23 +2159,18 @@
 					});
 
 					var box = new THREE.Box3().setFromObject(model);
-					debugMode && console.log( box.max, box.min, box.getSize(new THREE.Vector3()) );
-
+					debugMode && console.log(box.max,box.min,box.getSize());
 					for ( x=-1; x<3; x++){
 						for ( y=-1; y<3; y++){
 							debugMode && console.log({x,y});
-
-							var clone = model.clone();
-							clone.position.z = box.max.z + box.getSize(new THREE.Vector3()).z * x;
-							clone.position.x = box.min.x + box.getSize(new THREE.Vector3()).x * -y;
-							clone.position.y = 30;
-
-							scene.add(clone); city.block.push(clone);
-
-							clone.traverse(function(child){
+							city.block.push(model.clone())
+							city.block[city.block.length-1].position.z = box.max.z + box.getSize(new THREE.Vector3()).z * x;
+							city.block[city.block.length-1].position.x = box.min.x + box.getSize(new THREE.Vector3()).x * -y;
+							city.block[city.block.length-1].position.y = 30;
+							scene.add(city.block[city.block.length-1]);
+							city.block[city.block.length-1].traverse(function(child){
 								if (child.isMesh) cameraControls.rigidObjects.push(child);
 							});
-
 						}
 					}
 
