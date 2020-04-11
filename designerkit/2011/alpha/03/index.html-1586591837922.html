@@ -1543,7 +1543,7 @@
 			(function(){
 
 				renderer = new THREE.WebGLRenderer({
-					alpha: true,  // transparent rendering. important!
+					alpha: true,  // transparent rendering.
 					antialias: true,
 					preserveDrawingBuffer: true,
 				});
@@ -1551,10 +1551,10 @@
 				renderer.gammaInput = true;
 				renderer.gammaOutput = true;
 				renderer.shadowMap.enabled = true;
-				renderer.setClearColor( "none", 0 ); // transparent rendering. important!
+				renderer.setClearColor( "none", 0 ); // transparent rendering.
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( (window.innerWidth - 370), window.innerHeight );
-				renderer.domElement.style.background = "none";  // transparent rendering. important!
+				renderer.domElement.style.background = "none";  // transparent rendering.
 				document.body.appendChild( renderer.domElement );
 
 				window.addEventListener("resize", function onWindowResize() {
@@ -2561,48 +2561,6 @@
 				row.appendChild( button );
 				tab.appendChild( row );
 			})();
-
-		</script>
-
-		<script>
-/*
-			<input type="number" id="result-img-size-x" value="1400" name="img-size-x" min="200" max="10000">
-			<button class="btn btn-success btn-lg" onclick="renderImage();">
-				 Generate Image!
-			</button>
-
-		//	result image div.
-
-			<div id="result-img-div" style="display: none;position: fixed;left: 50%;margin-left: -400px;width: 800px;
-			height: 800px;top: 50px;padding: 10px;background: #2fa4e7;border: black 2px solid;border-radius: 15px;">
-
-				<img id="result-img" style="display:block; width:100%; height: auto;">
-				<h2 style="color:white">To save image, right click on the image above and select "Save Image As..", or alternatively, 
-					<a id="save-img-link" download="image.png" style="color: yellow">click here</a>.
-				</h2>
-				<h4 style="color:#ddd">You may use the result image for any personal and / or commercial purpose. No attribution required (although appreciated).</h4>
-				<h3>
-					<a style="position: absolute;bottom: 10px;left: 15px;color: yellow;cursor: pointer;"
-					onclick="document.getElementById('result-img-div').style.display='none';">Close Window</a>
-				</h3>
-
-			</div>
-
-		// render canvas!
-			function renderImage(){
-				var width = parseInt( document.getElementById("result-img-size-x").value );
-				var height = width * 1000 / 1400;
-				renderer.setSize(width, height);
-				render();
-				var canvas = renderer.domElement;
-				var img_data = canvas.toDataURL("image/png");
-				document.getElementById("result-img-div").style.display = "block";
-				document.getElementById("result-img").src = img_data;
-				document.getElementById("save-img-link").href = img_data;
-				onResize();
-				render();
-			}
-*/
 
 		</script>
 
