@@ -2139,14 +2139,14 @@
 				var tab = TabUI.Snapshots.tab;
 
 				var viewer = document.createElement("div");
-				viewer.style.cssText = "width:100%;height:300px;text-align:center;margin-bottom:20px;";
+				viewer.style.cssText = "width:100%;height:310px;text-align:center;";
 				tab.appendChild( viewer );
 
-			//	var image = new Image(300, 300);
-			//	image.id = "snapshot-viewer-img";
-			//	image.style.cssText = "width:100%;height:auto;border:1px solid;";
-			//	viewer.appendChild(image);
-			//	viewer.appendChild( image );
+				var image = new Image(300, 300);
+				image.id = "snapshot-viewer";
+				image.style.cssText = "width:auto;height:100%;";
+				viewer.appendChild(image);
+				viewer.appendChild( image );
 
 				var row = document.createElement("div");
 				row.style.cssText = "margin:10px 15px;height:40px;text-align:center;";
@@ -2171,7 +2171,7 @@
 					var alpha = renderer.getClearAlpha();
 
 				//	Create result dialog box.
-					var dialog = createDialog( 0.5 ); 
+					var dialog = createDialog( 0.7 ); 
 					document.body.appendChild( dialog );
 				//	debugMode && console.log( dialog );
 
@@ -2181,6 +2181,7 @@
 						if ( !scale ) scale = 0.5;
 						var width = parseInt( scale * renderer.domElement.width );
 						var height = parseInt( scale * renderer.domElement.height );
+					//	debugMode && console.log( width, height );
 						renderer.setSize(width, height); 
 						renderer.setClearColor( 0x000000, 0 ); // for transparent rendering set clear alpha: 0.
 						renderer.render( scene, camera ); // important!
@@ -2191,6 +2192,7 @@
 						//	var margins = (1-scale) * width / 2;
 							var innerWidth = parseInt( window.innerWidth - 370 );
 							var margins = parseInt( 0.5 * ( innerWidth - width) );
+							debugMode && console.log( innerWidth - width, margins );
 							var left = margins.toFixed(0)+"px;";
 							var right = (margins + 370).toFixed(0)+"px;";
 							return "left:"+left+"right:"+right; // +"width:"+width.toFixed(0)+"px;";
@@ -2198,81 +2200,41 @@
 
 						var dialog = document.createElement("div");
 						dialog.style.cssText = "display:block;position:fixed;" 
-					//	+ "min-height:400px;max-height:600px;height:auto;"
-						+ "top:50px;padding:0px;background:#2fa4e7;z-index:100;"
+						+ "min-height:400px;max-height:600px;height:auto;"
+						+ "top:50px;padding:10px;background:#2fa4e7;z-index:100;"
 						+ "border:black 2px solid;border-radius:15px;"
 						+ "text-align:center !important;" + calcMargins();
 
-						var img = new Image();
+						var img = new Image(width, height);
 						img.id = "snapshot-img";
 						img.style.cssText = "width:100%;max-height:540px;height:auto;";
 						img.src = dataURL;
 						dialog.appendChild( img );
 
-						jcrop = Jcrop.attach( img, {aspectRatio:1} ); 
-					//	debugMode && console.log( jcrop );
+					//	Crop image.
+						jcrop = Jcrop.attach(img);
+						debugMode && console.log( jcrop );
 
 						var link = document.createElement("a");
-						var span = document.createElement("span");
 						link.href = dataURL;
 						link.text = "click here";
 						link.download = "snapshot-image.png";
-						link.style.cssText = "color:gold;";
+						link.style.color = "gold";
+						var span = document.createElement("span");
 						span.appendChild( link );
 
 						var text = document.createElement("h3");
-						text.style.cssText = "position:absolute;bottom:40px;left:20px;right:20px;text-align:left;color:white;";
+						text.style.cssText = "position:absolute;bottom:30px;left:20px;right:20px;text-align:left;color:white;";
 						text.textContent = "To save image, right click on the image above and select \"Save Image As..\" or alternatively, ";
 						text.appendChild( span );
 						dialog.appendChild( text );
 
-						var row = document.createElement("div");
-						var crop = document.createElement("a");
-						crop.text = "Crop";
-						crop.style.cssText = "position:absolute;bottom:10px;left:15px;z-index:10;"
-						+ "color:white;cursor:pointer;text-decoration:none;font-size:x-large;";
-
-					//	Crop image.
-						crop.addEventListener( "click", function(){ 
-							if ( !jcrop.active ) { dialog.remove(); return; }
-
-							while ( viewer.children.length ){
-								viewer.firstChild.remove(); // debug!
-							}
-
-							var canvas = document.createElement( "canvas" );
-							canvas.style.cssText = "height:100%;border:1px solid;";
-
-							canvas.width = jcrop.active.pos.w;
-							canvas.height = jcrop.active.pos.h;
-
-							var x = 0; var y = 0;
-							var w = jcrop.active.pos.w;
-							var h = jcrop.active.pos.h;
-							var sourceX = jcrop.active.pos.x;
-							var sourceY = jcrop.active.pos.y;
-							var sourceW = jcrop.active.pos.w;
-							var sourceH = jcrop.active.pos.h;
-
-							var ctx = canvas.getContext("2d");
-							ctx.drawImage(img, sourceX, sourceY, sourceW, sourceH, x, y, w, h );
-							dataURL = canvas.toDataURL("image/png"); link.href = dataURL;
-						//	document.getElementById("snapshot-viewer-img").src = dataURL;
-
-							viewer.appendChild( canvas );
-							
-							dialog.remove();
-						//	jcrop.destroy(); 
-						});
-
-						var close = document.createElement("a");
-						close.text = "Close";
-						close.style.cssText = "position:absolute;bottom:10px;right:15px;z-index:10;"
-						+ "color:white;cursor:pointer;text-decoration:none;font-size:x-large;";
-						close.addEventListener( "click", function(){ dialog.remove(); });
-
-						row.appendChild( crop );
-						row.appendChild( close );
+						var row = document.createElement("h3");
+						var button = document.createElement("a");
+						button.text = "Close";
+						button.style.cssText = "position:absolute;bottom:10px;right:15px;color:white;cursor:pointer;text-decoration:none;";
+						button.addEventListener( "click", function(){ dialog.remove(); });
+						row.appendChild( button );
 						dialog.appendChild( row );
 
 						return dialog;
