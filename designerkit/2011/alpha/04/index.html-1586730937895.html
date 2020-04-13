@@ -62,6 +62,7 @@
 				right: calc(105px + 370px);
 			}
 
+			.btn-skin,
 			.btn-matcap,
 			.btn-terrain {
 				padding:0;
@@ -1207,8 +1208,6 @@
 
 				var textures = {};
 				var tab = TabUI.Eyes.tab;
-			//	var Signal = signals.Signal;
-			//	var matcapSelected = new Signal();
 
 				textures.dispose = function(){
 					for (var uuid in this ) {
@@ -1269,6 +1268,123 @@
 					})( matcaps.shift() );
 
 				}
+
+				tab.appendChild( container );
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	Skins tab.
+
+			(function(){
+
+				var textures = {};
+				var tab = TabUI.Skin.tab;
+
+				textures.dispose = function(){
+					for (var uuid in this ) {
+						var texture = this[ uuid ];
+						texture.dispose && texture.dispose();
+					}
+				}
+
+			//	Skin structure is ["head-torso-legs-thumb", ..., ] // important!
+				var skins = [ "qDWhJtk-iN7PZ5N-AVIdLwy-yTIykml", ];
+
+				var container = document.createElement("div");
+				container.id = "skin-buttons";
+				container.style.width = "300px";
+
+				while ( skins.length ) {
+					(function( btn_id ){
+
+						var button = document.createElement("div");
+						button.id = btn_id; // important!
+						button.classList.add("btn", "btn-white-outline", "btn-skin");
+
+						btn_id.split("-").forEach(function( id, index ){
+							switch( index ){
+
+								case 3: // thumbnail.
+									button.style.cssText = "background-size:contain;"
+									+ "background-image:url(https://i.imgur.com/"+id+".png);";
+								break;
+
+								default:
+									var url = "https://i.imgur.com/"+id+".png"; // TODO: cache textures.
+									var loader = new THREE.ImageLoader();
+									loader.setCrossOrigin("anonymous");				// important!
+									loader.load( url, function( image ){
+										var texture = new THREE.Texture( image );	// important!
+										texture.sourceFile = url;					// important!
+										textures[ texture.uuid ] = texture;
+										button.setAttribute("uuid"+index, texture.uuid);
+									});
+								break;
+
+							} // end switch.
+
+						}); // end forEach.
+
+					//	Event listener.
+
+						button.addEventListener( "click", function(){
+
+							var selected = scene.getObjectByName("HF_Nudebody");
+							if ( !selected ) throw "nudebody not found!";
+
+							var multimaterial = selected.material;
+							if ( !multimaterial ) throw "nudebody material not found!";
+							if ( !Array.isArray( multimaterial ) ) throw "nudebody is not multimaterial.";
+
+							multimaterial.forEach( function( material ){
+								debugMode && console.log( material.name );
+
+								if ( !material.name ) {
+									debugMode && console.log( material ); return;
+								}
+
+								var uuid; // texture uuid.
+
+								switch( material.name ){
+									case "HF Head":
+										uuid = button.getAttribute("uuid0");
+									break;
+									case "HF Upperbody":
+										uuid = button.getAttribute("uuid1");
+									break;
+									case "HF Lowerbody":
+										uuid = button.getAttribute("uuid2");
+									break;
+									default:
+										return;
+									break;
+								}
+								
+								if ( !uuid ) throw "uuid attribute not found!";
+
+								(function( material ){
+									material.roughness = 1.0;
+									material.metalness = 0.3;
+									material.map = textures[ uuid ];
+									material.map.needsUpdate = true;
+									material.needsUpdate = true;
+								})( material );
+
+								textures.dispose();
+
+							}); // end forEach.
+
+						}); // end EventListener.
+
+						container.appendChild( button ); // important!
+
+					})( skins.shift() );
+
+				} // end while.
 
 				tab.appendChild( container );
 
