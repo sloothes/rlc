@@ -134,8 +134,8 @@
 
 				document.body.appendChild( sidePanel );
 				TabUI.append("Outfit", "Materials", "Snapshots", "Animations", "Eyes", "Hair", "Skin", "Underwears", "Shoes", "Debug" );
-				TabUI.Animations.role.classList.add("active");
-				TabUI.Animations.tab.classList.add("in","active");
+				TabUI.Hair.role.classList.add("active");
+				TabUI.Hair.tab.classList.add("in","active");
 
 			})();
 
@@ -1352,8 +1352,6 @@
 							var mesh = scene.getObjectByProperty("uuid", uuid );
 							if ( !mesh ) throw "hair not found!";
 
-							return; // breakpoint!
-
 						//	if ( !Array.isArray( mesh.material ) ) {
 						//		var uuid = button.getAttribute("uuid");
 						//		apply_texture( mesh.material, uuid );
@@ -1365,7 +1363,6 @@
 						// 	apply_texture.
 							(function ( material, uuid ){
 								material.bumpScale = 0.1;
-								material.transparent = false;
 								material.color.setHex( 0xffffff );
 								material.map = textures[ uuid ];
 								material.bumpMap = textures[ uuid ];
